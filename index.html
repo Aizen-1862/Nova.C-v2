@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#09090f">
+<title>Nova.C — AI Coding Studio</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#09090f;color:#f5f5f7;font-family:system-ui,-apple-system,Segoe UI,sans-serif}
+header{padding:18px 16px 10px;position:sticky;top:0;background:#09090fee;backdrop-filter:blur(14px);z-index:5}
+.brand{font-size:25px;font-weight:850}.brand span{color:#9b6cff}.sub{color:#888897;font-size:12px}
+main{max-width:900px;margin:auto;padding:8px 14px 90px}.card{background:#12121b;border:1px solid #29293a;border-radius:18px;padding:14px;margin:12px 0}
+label{display:block;font-size:12px;color:#aaaabd;font-weight:750;margin-bottom:8px}
+textarea,select,input{font:inherit}textarea{width:100%;background:#08080d;color:#eee;border:1px solid #2c2c40;border-radius:12px;padding:12px;outline:none}
+textarea:focus,input:focus,select:focus{border-color:#8d63ff}.prompt{min-height:105px;resize:vertical}.code{min-height:350px;resize:vertical;font:13px/1.6 "SFMono-Regular",Consolas,monospace}
+.input{width:100%;background:#08080d;color:#eee;border:1px solid #2c2c40;border-radius:10px;padding:10px}
+.row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}button,select{border:0;border-radius:11px;padding:11px 14px;font-weight:750}
+button{background:#8d63ff;color:#fff}button.secondary,select{background:#222231;color:#ddd}button:disabled{opacity:.5}
+.output{min-height:85px;background:#08080d;border-radius:12px;padding:13px;font:13px/1.5 monospace;white-space:pre-wrap;overflow:auto}
+.good{color:#8df0ac}.bad{color:#ff91a6}.hint{color:#77778a;font-size:11px;margin-top:8px}
+.bottom{position:fixed;bottom:0;left:0;right:0;background:#101018f5;border-top:1px solid #29293a;padding:9px 12px;display:flex;justify-content:center;gap:8px;z-index:6}
+.modal{position:fixed;inset:0;background:#000b;display:none;align-items:center;justify-content:center;padding:18px;z-index:20}.modal.show{display:flex}.modalbox{width:min(520px,100%);background:#151520;border:1px solid #303047;border-radius:18px;padding:18px}
+.small{font-size:11px;color:#858596}.spinner{display:inline-block;width:12px;height:12px;border:2px solid #ffffff55;border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<header><div class="brand">⚡ Nova<span>.C</span></div><div class="sub">AI Coding Studio</div></header>
+<main>
+<section class="card">
+<label>🤖 WHAT DO YOU WANT TO CODE?</label>
+<textarea id="prompt" class="prompt" placeholder="Example: Create a C program that checks whether a number is even or odd."></textarea>
+<div class="row">
+<select id="language"><option value="c">C</option><option value="cpp">C++</option><option value="python">Python</option><option value="javascript">JavaScript</option></select>
+<button id="generateBtn" onclick="generate()">✨ Generate Code</button>
+<button class="secondary" onclick="openSettings()">⚙️ Backend</button>
+</div>
+<div class="hint">Nova.C sends the prompt to your configured backend. Your AI key stays on the backend, not in this page.</div>
+</section>
+
+<section class="card">
+<label>💻 CODE</label>
+<textarea id="code" class="code" spellcheck="false" placeholder="Generated code appears here..."></textarea>
+<div class="row">
+<button id="runBtn" onclick="runCode()">▶ Run</button>
+<button class="secondary" id="explainBtn" onclick="explain()">💡 Explain</button>
+<button class="secondary" id="fixBtn" onclick="fixCode()">🔧 Fix</button>
+<button class="secondary" onclick="copyCode()">📋 Copy</button>
+<button class="secondary" onclick="saveLocal()">💾 Save</button>
+</div>
+</section>
+
+<section class="card">
+<label>⌨️ PROGRAM INPUT</label>
+<textarea id="stdin" style="min-height:75px" placeholder="Input sent to scanf()/stdin, e.g. 8"></textarea>
+</section>
+
+<section class="card">
+<label>📤 OUTPUT</label>
+<div id="output" class="output">Ready.</div>
+</section>
+</main>
+
+<nav class="bottom"><button class="secondary" onclick="openSettings()">⚙️ Settings</button><button class="secondary" onclick="loadLocal()">📂 Load saved</button></nav>
+
+<div class="modal" id="settingsModal"><div class="modalbox">
+<h3 style="margin-top:0">⚙️ Nova.C Backend</h3>
+<p class="small">Enter the HTTPS URL of your deployed Nova.C backend. Do not put an AI API key here.</p>
+<input id="apiBase" class="input" placeholder="https://your-backend.example.com">
+<div class="row"><button onclick="saveSettings()">Save</button><button class="secondary" onclick="closeSettings()">Cancel</button></div>
+</div></div>
+
+<script>
+const $=id=>document.getElementById(id);
+const api=()=>localStorage.getItem('novaApiBase')||'';
+function setBusy(id,busy,label){$(id).disabled=busy;$(id).innerHTML=busy?'<span class="spinner"></span> '+label:label}
+async function post(path,body){
+ if(!api()) throw new Error('Backend URL is not configured. Tap ⚙️ Backend first.');
+ const r=await fetch(api().replace(/\/$/,'')+path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+ const data=await r.json().catch(()=>({error:'Invalid server response'}));
+ if(!r.ok) throw new Error(data.error||'Request failed');
+ return data;
+}
+async function generate(){
+ if(!$('prompt').value.trim()) return show('Write what you want Nova.C to build.','bad');
+ setBusy('generateBtn',true,'Generating...');
+ try{const d=await post('/api/generate',{prompt:$('prompt').value,language:$('language').value});$('code').value=d.code||'';show('Code generated.','good')}
+ catch(e){show(e.message,'bad')} finally{setBusy('generateBtn',false,'✨ Generate Code')}
+}
+async function runCode(){
+ if(!$('code').value.trim()) return show('Enter or generate code first.','bad');
+ setBusy('runBtn',true,'Running...');
+ try{const d=await post('/api/run',{language:$('language').value,code:$('code').value,stdin:$('stdin').value});let t='Status: '+(d.status||'Unknown')+'\\n';if(d.stdout)t+='\\n'+d.stdout;if(d.stderr)t+='\\n'+d.stderr;if(d.compile_output)t+='\\n'+d.compile_output;if(d.message)t+='\\n'+d.message;show(t,d.ok?'good':'bad')}
+ catch(e){show(e.message,'bad')} finally{setBusy('runBtn',false,'▶ Run')}
+}
+async function explain(){
+ if(!$('code').value.trim()) return show('Enter code first.','bad');
+ setBusy('explainBtn',true,'Explaining...');
+ try{const d=await post('/api/explain',{language:$('language').value,code:$('code').value});show(d.explanation||'No explanation returned.','good')}
+ catch(e){show(e.message,'bad')} finally{setBusy('explainBtn',false,'💡 Explain')}
+}
+async function fixCode(){
+ if(!$('code').value.trim()) return show('Enter code first.','bad');
+ setBusy('fixBtn',true,'Fixing...');
+ try{const d=await post('/api/fix',{language:$('language').value,code:$('code').value,error:$('output').innerText});if(d.code)$('code').value=d.code;show(d.explanation||'Code updated.','good')}
+ catch(e){show(e.message,'bad')} finally{setBusy('fixBtn',false,'🔧 Fix')}
+}
+function show(t,cls=''){ $('output').className='output '+cls; $('output').textContent=t }
+async function copyCode(){try{await navigator.clipboard.writeText($('code').value);show('Code copied.','good')}catch{show('Copy failed.','bad')}}
+function saveLocal(){localStorage.setItem('novaSaved',JSON.stringify({language:$('language').value,code:$('code').value,prompt:$('prompt').value,stdin:$('stdin').value}));show('Saved on this device.','good')}
+function loadLocal(){let x=JSON.parse(localStorage.getItem('novaSaved')||'null');if(!x)return show('No saved project.','bad');$('language').value=x.language||'c';$('code').value=x.code||'';$('prompt').value=x.prompt||'';$('stdin').value=x.stdin||'';show('Project loaded.','good')}
+function openSettings(){$('apiBase').value=api();$('settingsModal').classList.add('show')}
+function closeSettings(){$('settingsModal').classList.remove('show')}
+function saveSettings(){let x=$('apiBase').value.trim().replace(/\/$/,'');if(x&&!/^https?:\/\//.test(x))return alert('Enter a valid http(s) backend URL.');localStorage.setItem('novaApiBase',x);closeSettings();show(x?'Backend saved.':'Backend cleared.','good')}
+</script>
+</body>
+</html>
