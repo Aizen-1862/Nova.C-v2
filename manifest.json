@@ -1,1 +1,16 @@
-{"name":"Nova.C","short_name":"Nova.C","start_url":"./","display":"standalone","background_color":"#09090f","theme_color":"#09090f"}
+{
+  "name": "Nova.C — AI Coding Studio",
+  "short_name": "Nova.C",
+  "description": "Generate, run, explain and debug code with your AI coding companion.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#090811",
+  "theme_color": "#090811",
+  "categories": [
+    "education",
+    "developer",
+    "productivity"
+  ]
+}
