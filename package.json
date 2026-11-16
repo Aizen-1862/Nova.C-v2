@@ -1,0 +1,18 @@
+{
+  "name": "nova-c-v2",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Nova.C GitHub Pages frontend and API backend",
+  "scripts": {
+    "start": "node backend/server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "helmet": "^8.0.0"
+  }
+}
