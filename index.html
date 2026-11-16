@@ -163,43 +163,9 @@ button{white-space:normal}
   .control-row>.grow{font-size:12px;padding:9px 8px}
 }
 
-/* Animated 3D scene */
-.nova-scene{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;perspective:1100px;transform-style:preserve-3d}
-.topbar,main{position:relative;z-index:1}
-.scene-orb{position:absolute;border-radius:50%;filter:blur(.2px);transform-style:preserve-3d}
-.scene-orb.one{width:108px;height:108px;left:5.5%;top:29%;background:radial-gradient(circle at 30% 25%,#d4f8ff 0%,#55d4ff 9%,#1679e9 38%,#102a72 68%,#07152c 78%);box-shadow:inset -15px -18px 28px #020a20aa,inset 9px 8px 18px #c4f4ff66,0 0 48px #168dff55;animation:orbDrift 12s ease-in-out infinite}
-.scene-orb.two{width:54px;height:54px;right:9%;top:24%;background:radial-gradient(circle at 30% 25%,#efffff,#6ce5ff 12%,#277cff 52%,#172e80 78%);box-shadow:inset -8px -10px 16px #06133aaa,0 0 34px #27baff66;animation:orbDriftTwo 9s ease-in-out infinite}
-.scene-ring{position:absolute;width:190px;height:190px;right:6%;top:56%;border:1px solid #53cfff77;border-radius:50%;box-shadow:0 0 18px #168dff22,inset 0 0 18px #168dff18;transform-style:preserve-3d;animation:ringSpin 18s linear infinite}
-.scene-ring:before,.scene-ring:after{content:"";position:absolute;inset:16px;border:1px solid #478bff55;border-radius:50%;transform:rotateX(68deg) rotateY(22deg)}
-.scene-ring:after{inset:-15px 35px;border-color:#4de3ff66;transform:rotateY(72deg) rotateX(18deg)}
-.scene-cube{position:absolute;width:42px;height:42px;left:16%;bottom:13%;transform-style:preserve-3d;animation:cubeFloat 11s ease-in-out infinite}
-.scene-cube i{position:absolute;inset:0;border:1px solid #7bdcff99;background:linear-gradient(135deg,#38baff22,#315eff08);box-shadow:inset 0 0 18px #38baff22,0 0 18px #168dff22}
-.scene-cube i:nth-child(1){transform:translateZ(21px)}
-.scene-cube i:nth-child(2){transform:rotateY(90deg) translateZ(21px)}
-.scene-cube i:nth-child(3){transform:rotateY(180deg) translateZ(21px)}
-.scene-cube i:nth-child(4){transform:rotateY(-90deg) translateZ(21px)}
-.scene-cube i:nth-child(5){transform:rotateX(90deg) translateZ(21px)}
-.scene-cube i:nth-child(6){transform:rotateX(-90deg) translateZ(21px)}
-.scene-diamond{position:absolute;right:23%;top:14%;width:25px;height:25px;border:1px solid #8ceaffaa;background:linear-gradient(135deg,#57dfff55,#315eff18);box-shadow:0 0 22px #38baff55;transform:rotate(45deg) rotateX(55deg);animation:diamondDrift 8s ease-in-out infinite}
-@keyframes orbDrift{0%,100%{transform:translate3d(0,0,25px) rotateY(-18deg) scale(.94)}50%{transform:translate3d(28px,-34px,75px) rotateY(28deg) scale(1.08)}}
-@keyframes orbDriftTwo{0%,100%{transform:translate3d(0,0,0) scale(.9)}50%{transform:translate3d(-22px,30px,55px) scale(1.12)}}
-@keyframes ringSpin{0%{transform:rotateX(68deg) rotateY(-20deg) rotateZ(0)}100%{transform:rotateX(68deg) rotateY(340deg) rotateZ(360deg)}}
-@keyframes cubeFloat{0%,100%{transform:translate3d(0,0,0) rotateX(-24deg) rotateY(25deg) rotateZ(0)}50%{transform:translate3d(24px,-34px,70px) rotateX(156deg) rotateY(205deg) rotateZ(90deg)}}
-@keyframes diamondDrift{0%,100%{transform:translate3d(0,0,0) rotate(45deg) rotateX(55deg)}50%{transform:translate3d(-18px,28px,48px) rotate(135deg) rotateX(125deg)}}
-@media(max-width:850px){.scene-orb.one{left:-36px;top:32%;width:76px;height:76px}.scene-ring{right:-90px;top:61%;width:145px;height:145px}.scene-cube{left:5%;bottom:8%;transform:scale(.75)}.scene-diamond{right:10%;top:17%}}
-@media(prefers-reduced-motion:reduce){.scene-orb,.scene-ring,.scene-cube,.scene-diamond{animation:none!important}}
-
 </style>
 </head>
 <body>
-
-<div class="nova-scene" aria-hidden="true">
-  <div class="scene-orb one"></div>
-  <div class="scene-orb two"></div>
-  <div class="scene-ring"></div>
-  <div class="scene-cube"><i></i><i></i><i></i><i></i><i></i><i></i></div>
-  <div class="scene-diamond"></div>
-</div>
 
 <header class="topbar">
   <div class="brand-wrap"><div class="logo">⚡</div><div><div class="brand">Nova<span>.C</span></div><div class="tagline">AI CODING STUDIO</div></div></div>
