@@ -41,6 +41,17 @@ const pistonLanguages = {
   javascript: "javascript"
 };
 
+// Apply the same clean-output standard to every generated or repaired program.
+const DEFAULT_CODE_STYLE =
+  " Follow Nova.C's default beginner-friendly output style: keep programs straightforward and easy to use. " +
+  "Avoid unnecessary greetings, banners, status messages, repeated explanations, and decorative output. " +
+  "Print only essential results with short labels such as Result:, Sum:, Average:, or Grade:. " +
+  "Keep numeric output simple and avoid unnecessary decimal places. " +
+  "The code runner receives all standard input before execution, so do not print interactive input prompts by default; " +
+  "read input directly with standard input functions and let the app's input box collect it. " +
+  "If a prompt is genuinely important to the task, use one short, clear prompt rather than a long prompt for every value. " +
+  "Never sacrifice correctness, input validation, or the requested functionality just to shorten the output.";
+
 function requireText(value, name, maxLength) {
   if (typeof value !== "string" || !value.trim()) {
     const error = new Error(name + " is required.");
@@ -127,7 +138,8 @@ app.post("/api/generate", async (req, res, next) => {
     const answer = await askAI(
       "You are Nova.C, a careful programming tutor. Write a complete, beginner-friendly, correct " +
       languageNames[language] + " program for the user's request. Return ONLY source code, with no Markdown fences or explanation. " +
-      "Use standard language features and include helpful comments when appropriate. Never claim code was tested unless it was.",
+      "Use standard language features and include helpful comments when appropriate. Never claim code was tested unless it was." +
+      DEFAULT_CODE_STYLE,
       prompt
     );
     res.json({ ok: true, code: stripCodeFences(answer) });
@@ -156,7 +168,7 @@ app.post("/api/fix", async (req, res, next) => {
     const answer = await askAI(
       "You are Nova.C, a careful debugging assistant. Fix the supplied " + languageNames[language] +
       " code. Return ONLY valid complete source code, without Markdown fences. Preserve the user's intent. " +
-      "Do not claim the code was executed.",
+      "Do not claim the code was executed." + DEFAULT_CODE_STYLE,
       "CODE:\n" + code + "\n\nERROR OR OUTPUT:\n" + errorText
     );
     res.json({ ok: true, code: stripCodeFences(answer), explanation: "A corrected version is ready. Run it to verify the result." });
