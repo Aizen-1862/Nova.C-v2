@@ -127,7 +127,7 @@ app.post("/api/generate", async (req, res, next) => {
     const answer = await askAI(
       "You are Nova.C, a careful programming tutor. Write a complete, beginner-friendly, correct " +
       languageNames[language] + " program for the user's request. Return ONLY source code, with no Markdown fences or explanation. " +
-      "Use standard language features and include helpful comments when appropriate. Never claim code was tested unless it was.",
+      "Use standard language features and include helpful comments when appropriate. Apply these default UX rules to every generated program: keep interaction and output simple, clear, and beginner-friendly; show only essential results with short labels such as Result, Sum, Average, or Grade; avoid decorative banners, repeated headings, success/status messages, debug text, and unnecessary explanations in program output; keep prompts short and ask only for inputs the program actually needs; put separate prompts on separate lines when multiple prompts are necessary; when inputs naturally form one expression or record (such as a basic calculator), accept them together on one line where practical; format numbers cleanly without unnecessary trailing zeroes; preserve all requested functionality, validation, and useful error messages. Do not remove necessary input prompts or error handling just to shorten output. Never claim code was tested unless it was.",
       prompt
     );
     res.json({ ok: true, code: stripCodeFences(answer) });
@@ -141,7 +141,7 @@ app.post("/api/explain", async (req, res, next) => {
     const explanation = await askAI(
       "You are Nova.C, a patient programming tutor. Explain the supplied " + languageNames[language] +
       " code in clear beginner-friendly language. Cover what it does, the important lines, and the expected input/output. " +
-      "Do not invent behavior that is not in the code. Use concise headings and bullets.",
+      "Do not invent behavior that is not in the code. Use concise headings and bullets, and keep the explanation focused on what the user needs to understand without filler.",
       code
     );
     res.json({ ok: true, explanation });
@@ -156,7 +156,7 @@ app.post("/api/fix", async (req, res, next) => {
     const answer = await askAI(
       "You are Nova.C, a careful debugging assistant. Fix the supplied " + languageNames[language] +
       " code. Return ONLY valid complete source code, without Markdown fences. Preserve the user's intent. " +
-      "Do not claim the code was executed.",
+      "Apply the same clean-output defaults: concise user-facing prompts, only essential result text, no unnecessary banners/status/debug messages, readable formatting, and preserve required validation and useful errors. Do not claim the code was executed.",
       "CODE:\n" + code + "\n\nERROR OR OUTPUT:\n" + errorText
     );
     res.json({ ok: true, code: stripCodeFences(answer), explanation: "A corrected version is ready. Run it to verify the result." });
