@@ -3,143 +3,268 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#09090f">
+<meta name="theme-color" content="#090811">
+<meta name="description" content="Nova.C is your AI-powered coding studio. Generate, run, explain and debug code in one place.">
+<link rel="manifest" href="./manifest.json">
 <title>Nova.C — AI Coding Studio</title>
 <style>
-*{box-sizing:border-box}body{margin:0;background:#09090f;color:#f5f5f7;font-family:system-ui,-apple-system,Segoe UI,sans-serif}
-header{padding:18px 16px 10px;position:sticky;top:0;background:#09090fee;backdrop-filter:blur(14px);z-index:5}
-.brand{font-size:25px;font-weight:850}.brand span{color:#9b6cff}.sub{color:#888897;font-size:12px}
-main{max-width:900px;margin:auto;padding:8px 14px 90px}.card{background:#12121b;border:1px solid #29293a;border-radius:18px;padding:14px;margin:12px 0}
-label{display:block;font-size:12px;color:#aaaabd;font-weight:750;margin-bottom:8px}
-textarea,select,input{font:inherit}textarea{width:100%;background:#08080d;color:#eee;border:1px solid #2c2c40;border-radius:12px;padding:12px;outline:none}
-textarea:focus,input:focus,select:focus{border-color:#8d63ff}.prompt{min-height:105px;resize:vertical}.code{min-height:350px;resize:vertical;font:13px/1.6 "SFMono-Regular",Consolas,monospace}
-.input{width:100%;background:#08080d;color:#eee;border:1px solid #2c2c40;border-radius:10px;padding:10px}
-.row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}button,select{border:0;border-radius:11px;padding:11px 14px;font-weight:750}
-button{background:#8d63ff;color:#fff}button.secondary,select{background:#222231;color:#ddd}button:disabled{opacity:.5}
-.output{min-height:85px;background:#08080d;border-radius:12px;padding:13px;font:13px/1.5 monospace;white-space:pre-wrap;overflow:auto}
-.good{color:#8df0ac}.bad{color:#ff91a6}.hint{color:#77778a;font-size:11px;margin-top:8px}
-.bottom{position:fixed;bottom:0;left:0;right:0;background:#101018f5;border-top:1px solid #29293a;padding:9px 12px;display:flex;justify-content:center;gap:8px;z-index:6}
-.modal{position:fixed;inset:0;background:#000b;display:none;align-items:center;justify-content:center;padding:18px;z-index:20}.modal.show{display:flex}.modalbox{width:min(520px,100%);background:#151520;border:1px solid #303047;border-radius:18px;padding:18px}
-.small{font-size:11px;color:#858596}.spinner{display:inline-block;width:12px;height:12px;border:2px solid #ffffff55;border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}
+:root{color-scheme:dark;--bg:#090811;--panel:#11101b;--panel2:#171525;--line:#29263b;--muted:#9290a8;--text:#f7f5ff;--accent:#9a75ff;--accent2:#7651e8;--green:#70e5a1;--red:#ff829b;--amber:#ffd17b}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 12% -10%,#33205d66,transparent 35%),radial-gradient(ellipse at 100% 5%,#1d376044,transparent 30%),var(--bg);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
+button,textarea,select,input{font:inherit}
+button{cursor:pointer;border:1px solid transparent;border-radius:11px;padding:10px 14px;font-weight:750;color:#fff;background:linear-gradient(135deg,var(--accent),var(--accent2));transition:transform .16s ease,filter .16s ease,border-color .16s ease}
+button:hover:not(:disabled){filter:brightness(1.12);transform:translateY(-1px)}
+button:active:not(:disabled){transform:translateY(0)}
+button:disabled{opacity:.55;cursor:wait}
+button.secondary{background:#211e30;border-color:#353047;color:#e8e4f5}
+button.ghost{background:transparent;border-color:#343047;color:#c9c4d9}
+button.danger{background:#321b29;border-color:#573044;color:#ffb2c0}
+button:focus-visible,textarea:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid #ad91ff;outline-offset:2px}
+.topbar{height:72px;display:flex;align-items:center;justify-content:space-between;padding:0 clamp(16px,4vw,48px);border-bottom:1px solid #ffffff12;background:#0c0a15c9;backdrop-filter:blur(18px);position:sticky;top:0;z-index:10}
+.brand-wrap{display:flex;align-items:center;gap:12px}.logo{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;background:linear-gradient(145deg,#a984ff,#5e3bc8);box-shadow:0 8px 28px #8156ed55;font-size:20px}
+.brand{font-weight:900;letter-spacing:-.7px;font-size:20px}.brand span{color:#ae91ff}.tagline{font-size:11px;color:var(--muted);margin-top:2px}
+.top-actions{display:flex;align-items:center;gap:10px}.connection{display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:999px;padding:8px 12px;color:#bdb8cc;font-size:12px;background:#14121e}.dot{width:8px;height:8px;border-radius:50%;background:#777;box-shadow:0 0 0 3px #7772}.dot.online{background:var(--green);box-shadow:0 0 0 3px #70e5a122}.dot.offline{background:var(--red);box-shadow:0 0 0 3px #ff829b22}
+main{width:min(1440px,100%);margin:0 auto;padding:30px clamp(14px,3vw,38px) 92px}
+.hero{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;margin:0 0 22px}.eyebrow{color:#b39bff;font-size:11px;font-weight:850;letter-spacing:1.8px;text-transform:uppercase}.hero h1{font-size:clamp(25px,4vw,38px);letter-spacing:-1.4px;margin:7px 0 5px}.hero p{margin:0;color:var(--muted);font-size:13px;line-height:1.6}.hero-note{color:#a9a3ba;font-size:11px;text-align:right;max-width:230px;line-height:1.5}
+.workspace{display:grid;grid-template-columns:minmax(280px,.78fr) minmax(0,1.42fr);gap:16px;align-items:stretch}
+.panel{background:linear-gradient(155deg,#171525f2,#100f19f5);border:1px solid var(--line);border-radius:18px;box-shadow:0 16px 50px #0002;min-width:0;overflow:hidden}
+.panel-head{padding:17px 18px 13px;display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid #ffffff0c}.panel-title{font-size:13px;font-weight:850;letter-spacing:.2px;display:flex;align-items:center;gap:9px}.panel-sub{font-size:11px;color:var(--muted);margin-top:4px}
+.panel-body{padding:16px 18px 18px}
+.field-label{display:flex;align-items:center;justify-content:space-between;gap:10px;color:#c5bfd5;font-size:11px;font-weight:800;margin:0 0 9px;letter-spacing:.35px}
+textarea,select,input{width:100%;color:var(--text);background:#0b0a13;border:1px solid #302b43;border-radius:11px;padding:12px;outline:none}
+textarea{resize:vertical;line-height:1.55}textarea::placeholder,input::placeholder{color:#666276}
+.prompt{min-height:152px;font-size:13px}.code{height:440px;min-height:280px;resize:vertical;font:13px/1.65 ui-monospace,SFMono-Regular,Consolas,monospace;tab-size:4;white-space:pre;overflow:auto}
+select{width:auto;min-width:116px;padding:10px 34px 10px 12px;font-size:12px}
+.control-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:12px}.control-row .grow{flex:1}
+.hint{font-size:10px;color:#777287;line-height:1.5;margin-top:10px}
+.action-grid{display:flex;gap:8px;flex-wrap:wrap}.action-grid button{font-size:11px;padding:9px 11px}
+.editor-toolbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.editor-toolbar select{min-width:100px}
+.editor-area{padding:14px 16px 0}.editor-footer{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 17px 14px;color:#777287;font-size:10px}
+.output-panel{margin-top:16px}.output-head-actions{display:flex;align-items:center;gap:7px}.output-head-actions button{padding:7px 10px;font-size:10px}
+.output{min-height:116px;max-height:300px;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere;background:#090811;border:1px solid #29253a;border-radius:12px;padding:14px;color:#e8e4f2;font:12px/1.65 ui-monospace,SFMono-Regular,Consolas,monospace}
+.output.good{color:#b6f5ce}.output.bad{color:#ffb0bf}.output.info{color:#d8d0ff}
+.output-meta{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 9px;color:#827d94;font-size:10px}
+.modal{position:fixed;inset:0;background:#05040bcc;backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;padding:18px;z-index:30}.modal.show{display:flex}.modalbox{width:min(500px,100%);background:#171525;border:1px solid #39334f;border-radius:19px;padding:20px;box-shadow:0 24px 90px #0009}.modalbox h2{font-size:19px;margin:0 0 7px}.modalbox p{font-size:12px;color:var(--muted);line-height:1.6;margin:0 0 14px}
+.modal-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.modal-actions button{flex:1}
+.small{font-size:11px;color:var(--muted);line-height:1.5}
+.statusline{height:18px;font-size:11px;color:var(--muted);margin-top:10px}
+.spinner{display:inline-block;width:11px;height:11px;border:2px solid #ffffff55;border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;vertical-align:-1px;margin-right:5px}@keyframes spin{to{transform:rotate(360deg)}}
+.footer{display:flex;justify-content:center;gap:14px;flex-wrap:wrap;margin-top:18px;color:#716c82;font-size:10px}.footer kbd{border:1px solid #39344a;border-radius:5px;padding:2px 5px;color:#aaa4b8}
+@media(max-width:850px){.workspace{grid-template-columns:1fr}.hero-note{display:none}.code{height:380px}}
+@media(max-width:560px){.topbar{height:62px;padding:0 13px}.brand{font-size:18px}.tagline{display:none}.connection{padding:7px 9px;font-size:10px}.top-actions button{padding:8px 10px;font-size:11px}main{padding-top:22px}.hero{margin-bottom:15px}.hero h1{font-size:27px}.panel{border-radius:15px}.panel-head{padding:14px 14px 11px}.panel-body{padding:14px}.editor-area{padding:11px 12px 0}.code{height:330px;min-height:230px;font-size:12px}.prompt{min-height:125px}.action-grid button{flex:1}.output{font-size:11px}.footer{line-height:2}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
 </style>
 </head>
 <body>
-<header><div class="brand">⚡ Nova<span>.C</span></div><div class="sub">AI Coding Studio</div></header>
+<header class="topbar">
+  <div class="brand-wrap"><div class="logo">⚡</div><div><div class="brand">Nova<span>.C</span></div><div class="tagline">AI CODING STUDIO</div></div></div>
+  <div class="top-actions">
+    <div class="connection" title="Backend connection status"><span class="dot" id="healthDot"></span><span id="healthText">Checking API…</span></div>
+    <button class="secondary" onclick="openSettings()">⚙ Settings</button>
+  </div>
+</header>
 <main>
-<section class="card">
-<label>🤖 WHAT DO YOU WANT TO CODE?</label>
-<textarea id="prompt" class="prompt" placeholder="Example: Create a C program that checks whether a number is even or odd."></textarea>
-<div class="row">
-<select id="language"><option value="c">C</option><option value="cpp">C++</option><option value="python">Python</option><option value="javascript">JavaScript</option></select>
-<button id="generateBtn" onclick="generate()">✨ Generate Code</button>
-<button class="secondary" onclick="openSettings()">⚙️ Backend</button>
-</div>
-<div class="hint">Nova.C sends the prompt to your configured backend. Your AI key stays on the backend, not in this page.</div>
-</section>
+  <section class="hero">
+    <div><div class="eyebrow">Your coding companion</div><h1>Build something brilliant.</h1><p>Generate, run, understand and debug code — all in one workspace.</p></div>
+    <div class="hero-note">Your code runs in a remote sandbox.<br>Your AI key stays safely on the backend.</div>
+  </section>
 
-<section class="card">
-<label>💻 CODE</label>
-<textarea id="code" class="code" spellcheck="false" placeholder="Generated code appears here..."></textarea>
-<div class="row">
-<button id="runBtn" onclick="runCode()">▶ Run</button>
-<button class="secondary" id="explainBtn" onclick="explain()">💡 Explain</button>
-<button class="secondary" id="fixBtn" onclick="fixCode()">🔧 Fix</button>
-<button class="secondary" onclick="copyCode()">📋 Copy</button>
-<button class="secondary" onclick="saveLocal()">💾 Save</button>
-</div>
-</section>
+  <div class="workspace">
+    <section class="panel">
+      <div class="panel-head"><div><div class="panel-title"><span>✦</span> AI ASSISTANT</div><div class="panel-sub">Describe what you want to create</div></div></div>
+      <div class="panel-body">
+        <label class="field-label" for="prompt">YOUR PROMPT <span>✧</span></label>
+        <textarea id="prompt" class="prompt" maxlength="5000" placeholder="Example: Create a C program that checks whether a number is even or odd."></textarea>
+        <div class="control-row">
+          <select id="language" aria-label="Programming language">
+            <option value="c">C</option><option value="cpp">C++</option><option value="python">Python</option><option value="javascript">JavaScript</option>
+          </select>
+          <button id="generateBtn" class="grow" onclick="generate()">✦ Generate code</button>
+        </div>
+        <div class="hint">Be specific about the task, input and expected output for better results.</div>
+        <div class="statusline" id="aiStatus" aria-live="polite"></div>
+      </div>
+    </section>
 
-<section class="card">
-<label>📤 OUTPUT</label>
-<div id="output" class="output">Ready.</div>
-</section>
+    <section class="panel">
+      <div class="panel-head">
+        <div><div class="panel-title"><span>⌘</span> CODE EDITOR</div><div class="panel-sub">Edit your program before running it</div></div>
+        <div class="editor-toolbar">
+          <button class="ghost" onclick="downloadCode()" title="Download source file">↓ Export</button>
+          <button class="ghost" onclick="saveLocal()" title="Save on this device">Save</button>
+        </div>
+      </div>
+      <div class="editor-area">
+        <label class="field-label" for="code"><span id="fileLabel">main.c</span><span id="codeCount">0 lines</span></label>
+        <textarea id="code" class="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" placeholder="// Your generated code will appear here…"></textarea>
+      </div>
+      <div class="editor-footer"><span>UTF-8 · Plain text</span><span>Tab inserts spaces · Ctrl + Enter to run</span></div>
+      <div class="panel-body" style="padding-top:0">
+        <div class="action-grid">
+          <button id="runBtn" onclick="runCode()">▶ Run program</button>
+          <button class="secondary" id="explainBtn" onclick="explain()">✧ Explain</button>
+          <button class="secondary" id="fixBtn" onclick="fixCode()">⚒ Fix code</button>
+          <button class="secondary" onclick="copyCode()">▣ Copy</button>
+          <button class="danger" onclick="clearCode()">Clear</button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <section class="panel output-panel">
+    <div class="panel-head">
+      <div><div class="panel-title"><span>▸</span> CONSOLE OUTPUT</div><div class="panel-sub">Program results and assistant responses</div></div>
+      <div class="output-head-actions"><button class="ghost" onclick="copyOutput()">Copy</button><button class="ghost" onclick="clearOutput()">Clear</button></div>
+    </div>
+    <div class="panel-body">
+      <div class="output-meta"><span id="outputLabel">CONSOLE READY</span><span id="outputTime"></span></div>
+      <div id="output" class="output info" role="status" aria-live="polite">Your program output will appear here.</div>
+    </div>
+  </section>
+  <div class="footer"><span>Nova.C · AI Coding Studio</span><span><kbd>Ctrl</kbd> + <kbd>Enter</kbd> Run</span><span><kbd>Ctrl</kbd> + <kbd>S</kbd> Save</span><span><kbd>Esc</kbd> Close dialog</span></div>
 </main>
 
-<nav class="bottom"><button class="secondary" onclick="openSettings()">⚙️ Settings</button><button class="secondary" onclick="loadLocal()">📂 Load saved</button></nav>
+<div class="modal" id="settingsModal" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+  <div class="modalbox">
+    <h2 id="settingsTitle">Backend settings</h2>
+    <p>Connect Nova.C to your deployed API. Never enter your Groq or compiler API key here — those belong in your backend environment variables.</p>
+    <label class="field-label" for="apiBase">BACKEND URL</label>
+    <input id="apiBase" type="url" placeholder="https://your-backend.example.com">
+    <div class="modal-actions"><button onclick="saveSettings()">Save settings</button><button class="secondary" onclick="closeSettings()">Cancel</button></div>
+    <div class="statusline" id="settingsStatus"></div>
+  </div>
+</div>
 
-<div class="modal" id="settingsModal"><div class="modalbox">
-<h3 style="margin-top:0">⚙️ Nova.C Backend</h3>
-<p class="small">Enter the HTTPS URL of your deployed Nova.C backend. Do not put an AI API key here.</p>
-<input id="apiBase" class="input" placeholder="https://your-backend.example.com">
-<div class="row"><button onclick="saveSettings()">Save</button><button class="secondary" onclick="closeSettings()">Cancel</button></div>
-</div></div>
-
-<div class="modal" id="runInputModal"><div class="modalbox">
-<h3 style="margin-top:0">⌨️ Program Input</h3>
-<p class="small">Enter the input your program needs, then press Enter or Run. Leave it blank if your program doesn't need input.</p>
-<textarea id="runInput" class="prompt" style="min-height:90px" placeholder="Example: 8" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();submitRunInput()}"></textarea>
-<div class="row"><button onclick="submitRunInput()">▶ Run Program</button><button class="secondary" onclick="closeRunInput()">Cancel</button></div>
-</div></div>
-<textarea id="stdin" hidden></textarea>
+<div class="modal" id="runInputModal" role="dialog" aria-modal="true" aria-labelledby="runInputTitle">
+  <div class="modalbox">
+    <h2 id="runInputTitle">⌨ Program input</h2>
+    <p>Enter the input your program needs. For multiple values, put each value on a new line. Leave it blank if your program doesn't need input.</p>
+    <label class="field-label" for="runInput">STANDARD INPUT (STDIN)</label>
+    <textarea id="runInput" style="min-height:112px" placeholder="Example: 18"></textarea>
+    <div class="modal-actions"><button onclick="submitRunInput()">▶ Run program</button><button class="secondary" onclick="closeRunInput()">Cancel</button></div>
+    <div class="small" style="margin-top:10px">Tip: Press <kbd>Ctrl</kbd> + <kbd>Enter</kbd> to run.</div>
+  </div>
+</div>
 
 <script>
 const $=id=>document.getElementById(id);
-const api=()=>localStorage.getItem('novaApiBase')||'https://nova-c-v2-api.onrender.com';
-function setBusy(id,busy,label){$(id).disabled=busy;$(id).innerHTML=busy?'<span class="spinner"></span> '+label:label}
-async function post(path,body){
- if(!api()) throw new Error('Backend URL is not configured. Tap ⚙️ Backend first.');
- const r=await fetch(api().replace(/\/$/,'')+path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
- const data=await r.json().catch(()=>({error:'Invalid server response'}));
- if(!r.ok) throw new Error(data.error||'Request failed');
- return data;
+const DEFAULT_API='https://nova-c-v2-api.onrender.com';
+const api=()=>((localStorage.getItem('novaApiBase')||DEFAULT_API).trim().replace(/\/+$/,''));
+const extensions={c:'c',cpp:'cpp',python:'py',javascript:'js'};
+const labels={c:'C',cpp:'C++',python:'Python',javascript:'JavaScript'};
+let lastOutput='';
+function setBusy(id,busy,label){const b=$(id);b.disabled=busy;b.innerHTML=busy?'<span class="spinner"></span>'+label:label}
+function setStatus(id,message){$(id).textContent=message||''}
+function show(message,type='info',label='CONSOLE'){const el=$('output');el.className='output '+type;el.textContent=message||'No output.';lastOutput=el.textContent;$('outputLabel').textContent=label;$('outputTime').textContent=new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});}
+function clearOutput(){show('Console cleared.','info','CONSOLE CLEARED')}
+function fileName(){return 'main.'+(extensions[$('language').value]||'txt')}
+function updateEditorMeta(){$('fileLabel').textContent=fileName();const lines=$('code').value?$('code').value.split('\n').length:0;$('codeCount').textContent=lines+' '+(lines===1?'line':'lines')}
+async function request(path,body){
+ const controller=new AbortController();const timeout=setTimeout(()=>controller.abort(),50000);
+ try{
+  const response=await fetch(api()+path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body),signal:controller.signal});
+  const data=await response.json().catch(()=>({error:'The server returned an invalid response.'}));
+  if(!response.ok)throw new Error(data.error||'Request failed ('+response.status+').');
+  return data;
+ }catch(error){if(error.name==='AbortError')throw new Error('The request timed out. Please try again.');throw error}
+ finally{clearTimeout(timeout)}
+}
+async function checkBackend(){
+ $('healthText').textContent='Checking API…';$('healthDot').className='dot';
+ try{
+  const controller=new AbortController();const timer=setTimeout(()=>controller.abort(),9000);
+  const response=await fetch(api()+'/api/health',{signal:controller.signal,cache:'no-store'});clearTimeout(timer);
+  if(!response.ok)throw new Error('API unavailable');
+  const data=await response.json();
+  if(!data.ok)throw new Error('API unavailable');
+  $('healthDot').className='dot online';$('healthText').textContent='API connected';
+  $('healthText').title='AI: '+(data.aiConfigured?'ready':'not configured')+' · Runner: '+(data.codeRunnerConfigured?'ready':'not configured');
+ }catch(error){$('healthDot').className='dot offline';$('healthText').textContent='API offline';$('healthText').title='Could not reach the Nova.C backend.'}
 }
 async function generate(){
- if(!$('prompt').value.trim()) return show('Write what you want Nova.C to build.','bad');
- setBusy('generateBtn',true,'Generating...');
- try{const d=await post('/api/generate',{prompt:$('prompt').value,language:$('language').value});$('code').value=d.code||'';show('Code generated.','good')}
- catch(e){show(e.message,'bad')} finally{setBusy('generateBtn',false,'✨ Generate Code')}
+ const prompt=$('prompt').value.trim();if(!prompt)return show('Describe the program you want to create first.','bad','INPUT NEEDED');
+ setBusy('generateBtn',true,'Generating…');setStatus('aiStatus','Nova is writing your code…');
+ try{const data=await request('/api/generate',{prompt,language:$('language').value});if(!data.code)throw new Error('The AI returned an empty code response.');$('code').value=data.code;updateEditorMeta();show('Code generated successfully. Review it, then run your program.','good','GENERATION COMPLETE');setStatus('aiStatus','Your code is ready.')}
+ catch(error){show(error.message,'bad','GENERATION FAILED');setStatus('aiStatus','Generation failed.')}
+ finally{setBusy('generateBtn',false,'✦ Generate code')}
 }
 function runCode(){
- if(!$('code').value.trim()) return show('Enter or generate code first.','bad');
- $('runInput').value='';
- $('runInputModal').classList.add('show');
- $('runInput').focus();
+ if(!$('code').value.trim())return show('Add or generate some code before running it.','bad','NOTHING TO RUN');
+ $('runInput').value='';$('runInputModal').classList.add('show');$('runInput').focus();
 }
-function closeRunInput(){ $('runInputModal').classList.remove('show') }
-function submitRunInput(){
- $('stdin').value=$('runInput').value;
- closeRunInput();
- executeCode();
-}
+function closeRunInput(){$('runInputModal').classList.remove('show')}
 function echoProgramInput(stdout,stdin){
- const output=(stdout||'').replace(/\r\n/g,'\n');
- const input=(stdin||'').replace(/\r\n/g,'\n');
- if(!input) return output;
- const firstBreak=output.indexOf('\n');
- const firstLine=firstBreak===-1?output:output.slice(0,firstBreak);
- const rest=firstBreak===-1?'':output.slice(firstBreak+1);
+ const output=(stdout||'').replace(/\r\n/g,'\n');const input=(stdin||'').replace(/\r\n/g,'\n');
+ if(!input)return output;
+ const firstBreak=output.indexOf('\n');const firstLine=firstBreak===-1?output:output.slice(0,firstBreak);const rest=firstBreak===-1?'':output.slice(firstBreak+1);
  const promptEnd=firstLine.search(/[:?]/);
- if(promptEnd>=0){
-  const prompt=firstLine.slice(0,promptEnd+1).trimEnd();
-  const response=firstLine.slice(promptEnd+1).trimStart();
-  return prompt+' '+input+'\n'+[response,rest].filter(Boolean).join('\n');
- }
+ if(promptEnd>=0){const prompt=firstLine.slice(0,promptEnd+1).trimEnd();const response=firstLine.slice(promptEnd+1).trimStart();return prompt+' '+input+'\n'+[response,rest].filter(Boolean).join('\n')}
  return input+'\n'+output;
 }
-async function executeCode(){
- setBusy('runBtn',true,'Running...');
- try{const d=await post('/api/run',{language:$('language').value,code:$('code').value,stdin:$('stdin').value});const stdout=echoProgramInput(d.stdout||'',$('stdin').value);const result=[stdout,d.stderr,d.compile_output].filter(Boolean).join('\n').trim();show(result||(d.ok?'No output.':'Program could not be executed.'),d.ok?'good':'bad')}
- catch(e){show(e.message,'bad')} finally{setBusy('runBtn',false,'▶ Run')}
+async function submitRunInput(){
+ closeRunInput();setBusy('runBtn',true,'Running…');show('Compiling and running your program…','info','RUNNING');
+ try{
+  const stdin=$('runInput').value;const data=await request('/api/run',{language:$('language').value,code:$('code').value,stdin});
+  const stdout=echoProgramInput(data.stdout||'',stdin);const parts=[stdout,data.compile_output,data.stderr].filter(x=>typeof x==='string'&&x.trim());
+  const result=parts.join('\n').trim();const successful=Boolean(data.ok);
+  show(result||(successful?'Program finished with no output.':'The program could not be executed.'),successful?'good':'bad',successful?'EXECUTION COMPLETE':'EXECUTION FAILED');
+ }catch(error){show(error.message,'bad','RUN FAILED')}
+ finally{setBusy('runBtn',false,'▶ Run program')}
 }
 async function explain(){
- if(!$('code').value.trim()) return show('Enter code first.','bad');
- setBusy('explainBtn',true,'Explaining...');
- try{const d=await post('/api/explain',{language:$('language').value,code:$('code').value});show(d.explanation||'No explanation returned.','good')}
- catch(e){show(e.message,'bad')} finally{setBusy('explainBtn',false,'💡 Explain')}
+ if(!$('code').value.trim())return show('Enter some code first.','bad','NOTHING TO EXPLAIN');
+ setBusy('explainBtn',true,'Explaining…');show('Nova is reading your code…','info','EXPLAINING');
+ try{const data=await request('/api/explain',{language:$('language').value,code:$('code').value});show(data.explanation||'No explanation was returned.','info','CODE EXPLANATION')}
+ catch(error){show(error.message,'bad','EXPLANATION FAILED')}
+ finally{setBusy('explainBtn',false,'✧ Explain')}
 }
 async function fixCode(){
- if(!$('code').value.trim()) return show('Enter code first.','bad');
- setBusy('fixBtn',true,'Fixing...');
- try{const d=await post('/api/fix',{language:$('language').value,code:$('code').value,error:$('output').innerText});if(d.code)$('code').value=d.code;show(d.explanation||'Code updated.','good')}
- catch(e){show(e.message,'bad')} finally{setBusy('fixBtn',false,'🔧 Fix')}
+ if(!$('code').value.trim())return show('Enter some code first.','bad','NOTHING TO FIX');
+ const previous=$('output').textContent;
+ setBusy('fixBtn',true,'Fixing…');show('Nova is checking your code…','info','DEBUGGING');
+ try{const data=await request('/api/fix',{language:$('language').value,code:$('code').value,error:previous});if(!data.code)throw new Error('The AI did not return corrected code.');$('code').value=data.code;updateEditorMeta();show(data.explanation||'A revised version is ready. Run it to verify the result.','good','CODE UPDATED')}
+ catch(error){show(error.message,'bad','FIX FAILED')}
+ finally{setBusy('fixBtn',false,'⚒ Fix code')}
 }
-function show(t,cls=''){ $('output').className='output '+cls; $('output').textContent=t }
-async function copyCode(){try{await navigator.clipboard.writeText($('code').value);show('Code copied.','good')}catch{show('Copy failed.','bad')}}
-function saveLocal(){localStorage.setItem('novaSaved',JSON.stringify({language:$('language').value,code:$('code').value,prompt:$('prompt').value,stdin:$('stdin').value}));show('Saved on this device.','good')}
-function loadLocal(){let x=JSON.parse(localStorage.getItem('novaSaved')||'null');if(!x)return show('No saved project.','bad');$('language').value=x.language||'c';$('code').value=x.code||'';$('prompt').value=x.prompt||'';$('stdin').value=x.stdin||'';show('Project loaded.','good')}
-function openSettings(){$('apiBase').value=api();$('settingsModal').classList.add('show')}
+async function copyText(value,success){try{if(navigator.clipboard&&window.isSecureContext)await navigator.clipboard.writeText(value);else{const area=document.createElement('textarea');area.value=value;area.style.position='fixed';area.style.opacity='0';document.body.appendChild(area);area.select();const ok=document.execCommand('copy');area.remove();if(!ok)throw new Error('Copy unavailable')}show(success,'good','COPIED')}
+ catch(error){show('Could not copy automatically. Select the text and copy it manually.','bad','COPY FAILED')}}
+function copyCode(){if(!$('code').value)return show('There is no code to copy.','bad','NOTHING TO COPY');copyText($('code').value,'Code copied to clipboard.')}
+function copyOutput(){if(!lastOutput)return show('There is no output to copy.','bad','NOTHING TO COPY');copyText(lastOutput,'Console output copied.')}
+function saveLocal(){
+ const project={language:$('language').value,code:$('code').value,prompt:$('prompt').value,updatedAt:new Date().toISOString()};
+ try{localStorage.setItem('novaSaved',JSON.stringify(project));show('Project saved on this device.','good','PROJECT SAVED')}
+ catch(error){show('Could not save this project. Check your browser storage settings.','bad','SAVE FAILED')}
+}
+function loadLocal(){
+ try{const project=JSON.parse(localStorage.getItem('novaSaved')||'null');if(!project)return show('No saved project was found on this device.','bad','NOT FOUND');$('language').value=project.language||'c';$('code').value=project.code||'';$('prompt').value=project.prompt||'';updateEditorMeta();show('Your saved project has been loaded.','good','PROJECT LOADED')}
+ catch(error){show('The saved project could not be read.','bad','LOAD FAILED')}
+}
+function downloadCode(){
+ const code=$('code').value;if(!code.trim())return show('There is no code to export.','bad','NOTHING TO EXPORT');
+ const blob=new Blob([code],{type:'text/plain;charset=utf-8'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=fileName();document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);show('Downloaded '+fileName()+'.','good','EXPORT COMPLETE');
+}
+function clearCode(){if(!$('code').value)return; if(!confirm('Clear the code in the editor?'))return;$('code').value='';updateEditorMeta();show('Editor cleared.','info','EDITOR CLEARED')}
+function openSettings(){$('apiBase').value=api();$('settingsStatus').textContent='';$('settingsModal').classList.add('show')}
 function closeSettings(){$('settingsModal').classList.remove('show')}
-function saveSettings(){let x=$('apiBase').value.trim().replace(/\/$/,'');if(x&&!/^https?:\/\//.test(x))return alert('Enter a valid http(s) backend URL.');localStorage.setItem('novaApiBase',x);closeSettings();show(x?'Backend saved.':'Backend cleared.','good')}
+function saveSettings(){
+ const value=$('apiBase').value.trim().replace(/\/+$/,'');
+ if(!/^https:\/\/[a-z0-9.-]+(?::\d+)?(?:\/.*)?$/i.test(value)&&!/^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?(?:\/.*)?$/i.test(value)){setStatus('settingsStatus','Enter a valid HTTPS backend URL (HTTP is allowed for localhost).');return}
+ localStorage.setItem('novaApiBase',value);closeSettings();show('Backend URL saved. Checking the connection…','info','SETTINGS UPDATED');checkBackend();
+}
+$('language').addEventListener('change',updateEditorMeta);
+$('code').addEventListener('input',updateEditorMeta);
+$('code').addEventListener('keydown',event=>{
+ if(event.key==='Tab'){event.preventDefault();const start=event.target.selectionStart;const end=event.target.selectionEnd;event.target.setRangeText('    ',start,end,'end');updateEditorMeta()}
+});
+$('prompt').addEventListener('keydown',event=>{if((event.ctrlKey||event.metaKey)&&event.key==='Enter'){event.preventDefault();event.stopPropagation();generate()}});
+document.addEventListener('keydown',event=>{
+ if(event.key==='Escape'){closeSettings();closeRunInput()}
+ if((event.ctrlKey||event.metaKey)&&event.key.toLowerCase()==='s'){event.preventDefault();saveLocal()}
+ if((event.ctrlKey||event.metaKey)&&event.key==='Enter'){if($('runInputModal').classList.contains('show')){event.preventDefault();submitRunInput()}else if(!$('settingsModal').classList.contains('show')){event.preventDefault();runCode()}}
+});
+$('settingsModal').addEventListener('click',event=>{if(event.target===$('settingsModal'))closeSettings()});
+$('runInputModal').addEventListener('click',event=>{if(event.target===$('runInputModal'))closeRunInput()});
+updateEditorMeta();checkBackend();
 </script>
 </body>
 </html>
