@@ -71,7 +71,7 @@ button{background:#8d63ff;color:#fff}button.secondary,select{background:#222231;
 
 <script>
 const $=id=>document.getElementById(id);
-const api=()=>localStorage.getItem('novaApiBase')||'';
+const api=()=>localStorage.getItem('novaApiBase')||'https://nova-c-v2-api.onrender.com';
 function setBusy(id,busy,label){$(id).disabled=busy;$(id).innerHTML=busy?'<span class="spinner"></span> '+label:label}
 async function post(path,body){
  if(!api()) throw new Error('Backend URL is not configured. Tap ⚙️ Backend first.');
