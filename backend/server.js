@@ -8,7 +8,8 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const GROQ_API_KEY = process.env.GROQ_API_KEY || "";
 const GROQ_MODEL = process.env.GROQ_MODEL || "llama-3.3-70b-versatile";
-const PISTON_API_URL = (process.env.PISTON_API_URL || "https://emkc.org/api/v2/piston/execute").replace(/\/$/, "");
+const PISTON_API_URL = (process.env.PISTON_API_URL || "https://api.onlinecompiler.io/api/v2/piston/execute").replace(/\/$/, "");
+const ONLINECOMPILER_API_KEY = process.env.ONLINECOMPILER_API_KEY || "";
 
 const allowedOrigins = (process.env.ALLOWED_ORIGINS ||
   "https://aizen-1862.github.io,http://localhost:5500,http://127.0.0.1:5500")
@@ -114,7 +115,8 @@ app.get("/api/health", (_req, res) => {
     ok: true,
     service: "Nova.C API",
     aiConfigured: Boolean(GROQ_API_KEY),
-    codeRunner: "external-sandbox"
+    codeRunner: "OnlineCompiler.io",
+    codeRunnerConfigured: Boolean(ONLINECOMPILER_API_KEY)
   });
 });
 
@@ -167,10 +169,19 @@ app.post("/api/run", async (req, res, next) => {
     const code = requireText(req.body.code, "Code", 20000);
     const stdin = typeof req.body.stdin === "string" ? req.body.stdin.slice(0, 5000) : "";
 
-    // User code is sent to a separate execution sandbox; it is never run as a shell process on this server.
+    if (!ONLINECOMPILER_API_KEY) {
+      const error = new Error("Code runner is not configured. Add ONLINECOMPILER_API_KEY in the Render environment variables.");
+      error.status = 503;
+      throw error;
+    }
+
+    // User code is sent to a dedicated remote sandbox; it is never run as a shell process on this server.
     const response = await fetch(PISTON_API_URL, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": ONLINECOMPILER_API_KEY
+      },
       body: JSON.stringify({
         language: pistonLanguages[language],
         version: "*",
@@ -199,7 +210,7 @@ app.post("/api/run", async (req, res, next) => {
     const ok = !failedToCompile && exitCode === 0;
     res.json({
       ok,
-      status: failedToCompile ? "Compilation Error" : exitCode === 0 ? "Accepted" : "Runtime Error",
+      status: failedToCompile ? "Compilation Error" : exitCode === 0 ? "Accepted" : "Execution Error",
       stdout: run.stdout || "",
       stderr: run.stderr || "",
       compile_output: compileOutput,
