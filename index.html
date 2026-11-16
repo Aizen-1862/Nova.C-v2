@@ -108,7 +108,7 @@ function echoProgramInput(stdout,stdin){
  const firstBreak=output.indexOf('\n');
  const firstLine=firstBreak===-1?output:output.slice(0,firstBreak);
  const rest=firstBreak===-1?'':output.slice(firstBreak+1);
- const promptEnd=firstLine.search(/[:?]\s*(?=\S)/);
+ const promptEnd=firstLine.search(/[:?]/);
  if(promptEnd>=0){
   const prompt=firstLine.slice(0,promptEnd+1).trimEnd();
   const response=firstLine.slice(promptEnd+1).trimStart();
