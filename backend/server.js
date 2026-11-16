@@ -203,16 +203,22 @@ app.post("/api/run", async (req, res, next) => {
       throw error;
     }
 
-    const compileOutput = data.compile?.output || "";
+    // OnlineCompiler's Piston-compatible endpoint returns stdout/stderr as output/error
+    // and the exit code at the top level (rather than inside a Piston "run" object).
     const run = data.run || {};
+    const compileOutput = data.compile?.output || "";
     const failedToCompile = Boolean(data.compile && data.compile.code !== 0);
-    const exitCode = typeof run.code === "number" ? run.code : null;
+    const stdout = typeof data.output === "string" ? data.output : (run.stdout || "");
+    const stderr = typeof data.error === "string" ? data.error : (run.stderr || "");
+    const exitCode = typeof data.exit_code === "number"
+      ? data.exit_code
+      : typeof run.code === "number" ? run.code : null;
     const ok = !failedToCompile && exitCode === 0;
     res.json({
       ok,
       status: failedToCompile ? "Compilation Error" : exitCode === 0 ? "Accepted" : "Execution Error",
-      stdout: run.stdout || "",
-      stderr: run.stderr || "",
+      stdout,
+      stderr,
       compile_output: compileOutput,
       message: data.message || (exitCode !== null ? "Exit code: " + exitCode : "")
     });
