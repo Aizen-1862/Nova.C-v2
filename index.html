@@ -256,7 +256,7 @@ $('code').addEventListener('input',updateEditorMeta);
 $('code').addEventListener('keydown',event=>{
  if(event.key==='Tab'){event.preventDefault();const start=event.target.selectionStart;const end=event.target.selectionEnd;event.target.setRangeText('    ',start,end,'end');updateEditorMeta()}
 });
-$('prompt').addEventListener('keydown',event=>{if((event.ctrlKey||event.metaKey)&&event.key==='Enter'){event.preventDefault();generate()}});
+$('prompt').addEventListener('keydown',event=>{if((event.ctrlKey||event.metaKey)&&event.key==='Enter'){event.preventDefault();event.stopPropagation();generate()}});
 document.addEventListener('keydown',event=>{
  if(event.key==='Escape'){closeSettings();closeRunInput()}
  if((event.ctrlKey||event.metaKey)&&event.key.toLowerCase()==='s'){event.preventDefault();saveLocal()}
