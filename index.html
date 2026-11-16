@@ -50,11 +50,6 @@ button{background:#8d63ff;color:#fff}button.secondary,select{background:#222231;
 </section>
 
 <section class="card">
-<label>⌨️ PROGRAM INPUT</label>
-<textarea id="stdin" style="min-height:75px" placeholder="Input sent to scanf()/stdin, e.g. 8"></textarea>
-</section>
-
-<section class="card">
 <label>📤 OUTPUT</label>
 <div id="output" class="output">Ready.</div>
 </section>
@@ -69,9 +64,17 @@ button{background:#8d63ff;color:#fff}button.secondary,select{background:#222231;
 <div class="row"><button onclick="saveSettings()">Save</button><button class="secondary" onclick="closeSettings()">Cancel</button></div>
 </div></div>
 
+<div class="modal" id="runInputModal"><div class="modalbox">
+<h3 style="margin-top:0">⌨️ Program Input</h3>
+<p class="small">Enter the input your program needs, then press Enter or Run. Leave it blank if your program doesn't need input.</p>
+<textarea id="runInput" class="prompt" style="min-height:90px" placeholder="Example: 8" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();submitRunInput()}"></textarea>
+<div class="row"><button onclick="submitRunInput()">▶ Run Program</button><button class="secondary" onclick="closeRunInput()">Cancel</button></div>
+</div></div>
+<textarea id="stdin" hidden></textarea>
+
 <script>
 const $=id=>document.getElementById(id);
-const api=()=>localStorage.getItem('novaApiBase')||'';
+const api=()=>localStorage.getItem('novaApiBase')||'https://nova-c-v2-api.onrender.com';
 function setBusy(id,busy,label){$(id).disabled=busy;$(id).innerHTML=busy?'<span class="spinner"></span> '+label:label}
 async function post(path,body){
  if(!api()) throw new Error('Backend URL is not configured. Tap ⚙️ Backend first.');
@@ -86,8 +89,19 @@ async function generate(){
  try{const d=await post('/api/generate',{prompt:$('prompt').value,language:$('language').value});$('code').value=d.code||'';show('Code generated.','good')}
  catch(e){show(e.message,'bad')} finally{setBusy('generateBtn',false,'✨ Generate Code')}
 }
-async function runCode(){
+function runCode(){
  if(!$('code').value.trim()) return show('Enter or generate code first.','bad');
+ $('runInput').value='';
+ $('runInputModal').classList.add('show');
+ $('runInput').focus();
+}
+function closeRunInput(){ $('runInputModal').classList.remove('show') }
+function submitRunInput(){
+ $('stdin').value=$('runInput').value;
+ closeRunInput();
+ executeCode();
+}
+async function executeCode(){
  setBusy('runBtn',true,'Running...');
  try{const d=await post('/api/run',{language:$('language').value,code:$('code').value,stdin:$('stdin').value});let t='Status: '+(d.status||'Unknown')+'\\n';if(d.stdout)t+='\\n'+d.stdout;if(d.stderr)t+='\\n'+d.stderr;if(d.compile_output)t+='\\n'+d.compile_output;if(d.message)t+='\\n'+d.message;show(t,d.ok?'good':'bad')}
  catch(e){show(e.message,'bad')} finally{setBusy('runBtn',false,'▶ Run')}
