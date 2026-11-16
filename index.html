@@ -101,9 +101,24 @@ function submitRunInput(){
  closeRunInput();
  executeCode();
 }
+function echoProgramInput(stdout,stdin){
+ const output=(stdout||'').replace(/\\r\\n/g,'\\n');
+ const input=(stdin||'').replace(/\\r\\n/g,'\\n');
+ if(!input) return output;
+ const firstBreak=output.indexOf('\\n');
+ const firstLine=firstBreak===-1?output:output.slice(0,firstBreak);
+ const rest=firstBreak===-1?'':output.slice(firstBreak+1);
+ const promptEnd=firstLine.search(/[:?]\\s*(?=\\S)/);
+ if(promptEnd>=0){
+  const prompt=firstLine.slice(0,promptEnd+1).trimEnd();
+  const response=firstLine.slice(promptEnd+1).trimStart();
+  return prompt+' '+input+'\\n'+[response,rest].filter(Boolean).join('\\n');
+ }
+ return input+'\\n'+output;
+}
 async function executeCode(){
  setBusy('runBtn',true,'Running...');
- try{const d=await post('/api/run',{language:$('language').value,code:$('code').value,stdin:$('stdin').value});const result=[d.stdout,d.stderr,d.compile_output].filter(Boolean).join('\\n').trim();show(result||(d.ok?'No output.':'Program could not be executed.'),d.ok?'good':'bad')}
+ try{const d=await post('/api/run',{language:$('language').value,code:$('code').value,stdin:$('stdin').value});const stdout=echoProgramInput(d.stdout||'',$('stdin').value);const result=[stdout,d.stderr,d.compile_output].filter(Boolean).join('\\n').trim();show(result||(d.ok?'No output.':'Program could not be executed.'),d.ok?'good':'bad')}
  catch(e){show(e.message,'bad')} finally{setBusy('runBtn',false,'▶ Run')}
 }
 async function explain(){
